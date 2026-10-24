@@ -23,11 +23,8 @@ async def get_all_by_subject(subject: str):
 
 @router.post("/completed_lesson")
 async def completed_lesson_api(completed_lesson: CompletedSchema, request: Request):
-    result = LessonController.completed(
-        request,
-        completed_lesson.lesson_id
-    )
-    return f"xp: {result}"
+    result = LessonController.completed(request, completed_lesson.lesson_id)
+    return {"xp": result}
 
 @router.get("/my_completed_lesson")
 async def completed_lessons(request: Request):

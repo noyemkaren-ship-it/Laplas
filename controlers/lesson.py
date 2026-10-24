@@ -8,7 +8,7 @@ from utils.fub_checker import FubChecker
 class LessonController:
     @staticmethod
     def _get_user_id_from_request(request: Request) -> int:
-        user_id = request.cookies.get("user_id")
+        user_id = request.cookies.get("data")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Not authenticated")
         try:
@@ -53,9 +53,10 @@ class LessonController:
     @staticmethod
     def completed(request: Request, lesson_id: int):
         user_id = LessonController._get_user_id_from_request(request)
+        real_lesson_id = LessonRepository.get_id_by_num(num=lesson_id)
         return LessonRepository.completed(
             user_id=user_id,
-            lesson_id=lesson_id
+            lesson_id=real_lesson_id,
         )
 
     @staticmethod

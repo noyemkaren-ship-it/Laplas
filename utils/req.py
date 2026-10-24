@@ -9,7 +9,6 @@ COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7 дней
 
 
 def _encode_id(user_id: int) -> str:
-    """Шифрует (подписывает) id в JWT-токен."""
     payload = {
         "sub": str(user_id),
         "iat": datetime.now(timezone.utc),
@@ -19,7 +18,6 @@ def _encode_id(user_id: int) -> str:
 
 
 def _decode_id(token: str) -> int | None:
-    """Расшифровывает (проверяет) JWT-токен и возвращает id или None."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return int(payload["sub"])
@@ -28,7 +26,6 @@ def _decode_id(token: str) -> int | None:
 
 
 def get_id(request: Request) -> int | None:
-    """Функция для получения id с помощью файлов cookie."""
     token = request.cookies.get(COOKIE_KEY)
     if not token:
         return None
@@ -42,11 +39,17 @@ def create_cookie(response: Response, user_id: int) -> None:
         value=token,
         max_age=COOKIE_MAX_AGE,
         httponly=True,
-        samesite="none",
+        samesite="lax",       # ← было "none" — на HTTP браузер выкидывал cookie
+        secure=False,         # ← явно False для локальной разработки
         path="/",
     )
 
 
 def delete_cookie(response: Response) -> None:
-    """Удаляет cookie с id."""
-    response.delete_cookie(key=COOKIE_KEY, path="/")
+    response.delete_cookie(
+        key=COOKIE_KEY,
+        path="/",
+        httponly=True,
+        samesite="lax",
+        secure=False,
+    )

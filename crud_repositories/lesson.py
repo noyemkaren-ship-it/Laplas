@@ -30,6 +30,13 @@ class LessonRepository:
         return 5
 
     @staticmethod
+    def get_id_by_num(num: int) -> int:
+        results = get_by_parameter(Lesson, "num", num)
+        if not results:
+            raise ValueError(f"Lesson num={num} not found")
+        return results[0].id
+
+    @staticmethod
     def get_user_completed(user_id: int):
         return get_by_parameter(Completed, "user_id", user_id)
 

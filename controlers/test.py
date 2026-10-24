@@ -4,19 +4,18 @@ from schemas import Answer, TestSchema
 from crud_repositories import TestCrudRepository
 from crud_repositories import UserCrudRepository
 from fastapi import Request
+from utils.req import get_id
 
 usc = UserCrudRepository()
 
 class TestController:
+
     @staticmethod
     def _get_user_id_from_request(request: Request) -> int:
-        user_id = request.cookies.get("user_id")
+        user_id = get_id(request)
         if user_id is None:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        try:
-            return int(user_id)
-        except ValueError:
-            raise HTTPException(status_code=401, detail="Invalid session")
+        return user_id
 
     @staticmethod
     def get_by_id(test_id: int):

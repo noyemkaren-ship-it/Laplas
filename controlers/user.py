@@ -3,7 +3,7 @@ from utils.responses import Label
 from crud_repositories import UserCrudRepository
 from schemas import UserLogin, UserIn, UserOut
 from utils.hesh_password import verify_psw
-from utils.req import create_cookie
+from utils.req import create_cookie, get_id
 
 
 class UserController:
@@ -13,16 +13,10 @@ class UserController:
     def login(self, user: UserLogin, response: Response) -> UserOut:
         user_in_db = self.us.get_by_email(user.email)
 
-        lbl = Label(user.password, user.email)
-
         if user_in_db is None:
-            lbl.not_found()
-            print(1)
             raise HTTPException(status_code=401, detail="Invalid email or password")
 
         if not verify_psw(user.password, user_in_db.password):
-            lbl.not_found()
-            print(2)
             raise HTTPException(status_code=401, detail="Invalid email or password")
 
         create_cookie(response, user_in_db.id)
@@ -38,12 +32,17 @@ class UserController:
         users = self.us.get_all(user_id)
         return [UserOut.model_validate(u) for u in users]
 
+    def me(self, request: Request) -> UserOut:
+        user_id = self._get_user_id_from_request(request)
+        user = self.us.get_by_id(user_id)
+        return UserOut.model_validate(user)
+
+    from utils.req import get_id
+
     @staticmethod
     def _get_user_id_from_request(request: Request) -> int:
-        user_id = request.cookies.get("user_id")
+        user_id = get_id(request)
         if user_id is None:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        try:
-            return int(user_id)
-        except ValueError:
-            raise HTTPException(status_code=401, detail="Invalid session")
+        return user_id
+
