@@ -4,17 +4,15 @@ from fastapi import Request, HTTPException
 from crud_repositories import UserCrudRepository
 from models import Lesson, Completed
 from utils.fub_checker import FubChecker
+from utils.req import get_id
 
 class LessonController:
     @staticmethod
     def _get_user_id_from_request(request: Request) -> int:
-        user_id = request.cookies.get("data")
+        user_id = get_id(request)
         if user_id is None:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        try:
-            return int(user_id)
-        except ValueError:
-            raise HTTPException(status_code=401, detail="Invalid session")
+        return user_id
 
     @staticmethod
     def _is_admin(us_id: int) -> bool:
