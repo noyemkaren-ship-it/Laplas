@@ -3,6 +3,7 @@ from models import Test
 from sqlalchemy import select
 from db_methods import create, get_all, get_by_parameter
 from schemas import TestSchema, TestOut, Answer
+from sqlalchemy import select, delete as sql_delete
 
 class TestCrudRepository:
     @staticmethod
@@ -17,6 +18,13 @@ class TestCrudRepository:
             subject=test.subject,
             question=test.question,
         )
+
+    @staticmethod
+    def delete_by_id(test_id: int) -> None:
+        with Session() as session:
+            stmt = sql_delete(Test).where(Test.id == test_id)
+            session.execute(stmt)
+            session.commit()
 
     @staticmethod
     def get_by_subject(subject: str):

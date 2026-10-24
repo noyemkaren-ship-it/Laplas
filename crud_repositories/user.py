@@ -2,7 +2,7 @@ from sqlalchemy import select, delete as sql_delete
 from db_methods import create, get_by_parameter, get_all as db_get_all
 from base import Session
 from schemas import UserIn, UserLogin, UserOut
-from models import User
+from models import User, Completed
 from utils.hesh_password import hash_psw, verify_psw
 from utils.errors_codes import LogicError
 
@@ -109,3 +109,10 @@ class UserCrudRepository:
             if not user:
                 raise LogicError("User not found")
             return bool(user.admin)
+
+    @staticmethod
+    def delete_by_id(user_id: int) -> None:
+        with Session() as session:
+            session.execute(sql_delete(Completed).where(Completed.user_id == user_id))
+            session.execute(sql_delete(User).where(User.id == user_id))
+            session.commit()

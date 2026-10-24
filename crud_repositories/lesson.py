@@ -1,7 +1,9 @@
+from base import Session
 from schemas import Lesson as LessonSchema, LessonOut
 from db_methods import create, get_all, get_by_parameter
 from models import Lesson, Completed
 from crud_repositories import UserCrudRepository
+from sqlalchemy import select, delete as sql_delete
 
 class LessonRepository:
 
@@ -35,6 +37,13 @@ class LessonRepository:
         if not results:
             raise ValueError(f"Lesson num={num} not found")
         return results[0].id
+
+    @staticmethod
+    def delete_by_id(lesson_id: int) -> None:
+        with Session() as session:
+            stmt = sql_delete(Lesson).where(Lesson.id == lesson_id)
+            session.execute(stmt)
+            session.commit()
 
     @staticmethod
     def get_user_completed(user_id: int):

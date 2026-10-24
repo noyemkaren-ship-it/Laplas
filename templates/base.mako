@@ -21,6 +21,9 @@
         <a href="/lessons">Lessons</a>
         <a href="/tests">Tests</a>
         <a href="/subjects">Subjects</a>
+        % if user and user.admin:
+            <a href="/admin_panel">Admin</a>
+        % endif
     </div>
     <div class="nav-user">
         % if user:
