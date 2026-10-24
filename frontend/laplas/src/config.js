@@ -1,6 +1,6 @@
 // ⚙️ Конфиг фронтенда — меняй только здесь
 const PROTOCOL = "http";
-const HOST = "127.0.0.1";
+const HOST = "46.253.132.225";
 const PORT = 7600;
 
 export const API_BASE_URL = import.meta.env.DEV
