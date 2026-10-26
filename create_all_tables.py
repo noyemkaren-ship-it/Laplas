@@ -1,12 +1,21 @@
 from base import Base, engine
 import models
 from crud_repositories import UserCrudRepository
+from crud_repositories import PrivateTutorRepository
 from base import Session
 from sqlalchemy import select
 
+from schemas import PrivateTutorSchema
+
 Base.metadata.create_all(engine)
 UserCrudRepository.create_admin(2012, password="Kirov288A")
+PrivateTutorRepository.create(pt=PrivateTutorSchema(
+    name="Анна Матвесян",
+    subject="english",
+    description="Я учитель по английскому, могу помочь вам в любой проблеме, имею высшее образования и не маленький стаж",
+    initials="Номер телефона +374 93 814054 есть в Whatsap и Telegram"
 
+))
 FIRST_LESSON_HTML = """
 <h2>Introduction to English</h2>
 

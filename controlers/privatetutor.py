@@ -1,6 +1,6 @@
 from http.client import HTTPResponse
 from starlette.responses import HTMLResponse
-from crud_repositories.privatetutor import PrivateTutorRepository
+from crud_repositories import PrivateTutorRepository
 from schemas import PrivateTutorSchema
 from utils.req import get_id
 from fastapi import Request, HTTPException
