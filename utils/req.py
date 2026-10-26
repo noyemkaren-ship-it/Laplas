@@ -39,11 +39,10 @@ def create_cookie(response: Response, user_id: int) -> None:
         value=token,
         max_age=COOKIE_MAX_AGE,
         httponly=True,
-        samesite="lax",       # ← было "none" — на HTTP браузер выкидывал cookie
-        secure=False,         # ← явно False для локальной разработки
+        samesite="lax",
+        secure=False,
         path="/",
     )
-
 
 def delete_cookie(response: Response) -> None:
     response.delete_cookie(

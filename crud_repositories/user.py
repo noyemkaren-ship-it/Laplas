@@ -59,9 +59,11 @@ class UserCrudRepository:
         return verify_psw(ul.password, user.password)
 
     @staticmethod
-    def get_by_id(us_id: int) -> User | None:
-        res = get_by_parameter(User, "id", us_id)
-        return res[0] if res else None
+    def get_by_id(us_id: int) -> User:
+        res = get_by_parameter(User, 'id', us_id)
+        if not res:
+            raise LogicError('User not found')
+        return res[0]
 
     @staticmethod
     def get_by_email(email: str) -> User | None:

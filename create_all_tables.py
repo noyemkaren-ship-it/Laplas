@@ -1,14 +1,11 @@
 from base import Base, engine
 import models
 from crud_repositories import UserCrudRepository
-
-Base.metadata.create_all(engine)
-
-UserCrudRepository.create_admin(2012, password="Kirov288A")
-
 from base import Session
 from sqlalchemy import select
 
+Base.metadata.create_all(engine)
+UserCrudRepository.create_admin(2012, password="Kirov288A")
 
 FIRST_LESSON_HTML = """
 <h2>Introduction to English</h2>

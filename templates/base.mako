@@ -24,6 +24,7 @@
         % if user and user.admin:
             <a href="/admin_panel">Admin</a>
         % endif
+        <a href="/private-tutors">Private Tutors</a>
     </div>
     <div class="nav-user">
         % if user:
