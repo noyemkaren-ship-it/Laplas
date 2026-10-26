@@ -20,7 +20,7 @@
 <div class="profile-grid" style="margin-bottom:48px;">
     <div class="profile-card stat-card">
         <div class="stat-label">Tutors</div>
-        <div class="stat-value">${lessons_count}</div>
+        <div class="stat-value">${tutors_count}</div>
     </div>
     <div class="profile-card stat-card">
         <div class="stat-label">Subjects</div>
@@ -36,9 +36,11 @@
 <section style="margin-bottom:48px;">
     <h2 class="section-title" style="text-align:left; font-size:24px; margin-bottom:20px;">Filter by subject</h2>
     <div class="filter-row">
-        <a href="/tutors" class="chip active">All</a>
+        <a href="/private-tutors"
+           class="chip ${'active' if not active_subject else ''}">All</a>
         % for s in subjects:
-            <a href="/tutors?subject=${s}" class="chip">${s}</a>
+            <a href="/private-tutors?subject=${s}"
+               class="chip ${'active' if s == active_subject else ''}">${s}</a>
         % endfor
     </div>
 </section>
@@ -76,39 +78,26 @@
 
                 <div class="tutor-actions">
                     % if user:
-                        <a href="/tutors/${t.id}" class="btn-primary" style="flex:1;">Book session</a>
+                        <a href="/private-tutors/${t.id}/book" class="btn-primary" style="flex:1;">Book a session</a>
                     % else:
                         <a href="/login" class="btn-primary" style="flex:1;">Sign in to book</a>
                     % endif
-                    <a href="/tutors/${t.id}" class="btn-outline">Profile</a>
                 </div>
             </div>
             % endfor
         </div>
     % else:
-        <!-- Fallback: контроллер не передал tutors, показываем заглушку по subjects -->
-        % if subjects:
-            <div class="subject-cards">
-                % for s in subjects:
-                <a href="/tutors?subject=${s}" class="subject-card">
-                    <div class="sc-glow"></div>
-                    <h3>${s}</h3>
-                    <span class="sc-arrow">Find tutors →</span>
-                </a>
-                % endfor
-            </div>
-        % else:
-            <div class="empty" style="padding:80px 20px;">
-                <div style="font-size:48px; margin-bottom:16px;">🎓</div>
-                <h3 style="font-family:'Space Grotesk',sans-serif; font-size:22px; margin-bottom:8px; color:var(--text);">No tutors yet</h3>
-                <p>Be the first to join as a private tutor on Laplas.</p>
-                % if user:
-                    <a href="/tutors/apply" class="btn-primary" style="margin-top:20px;">Become a tutor →</a>
+        <div style="text-align:center; padding:60px 20px; color:var(--muted);">
+            <h3 style="margin-bottom:8px;">No tutors found</h3>
+            <p>
+                % if active_subject:
+                    По предмету «${active_subject}» пока нет репетиторов.
+                    <a href="/private-tutors" style="color:var(--accent);">Показать всех</a>
                 % else:
-                    <a href="/register" class="btn-primary" style="margin-top:20px;">Create account →</a>
+                    Пока нет ни одного репетитора. Загляните позже или станьте первым!
                 % endif
-            </div>
-        % endif
+            </p>
+        </div>
     % endif
 </section>
 
@@ -120,7 +109,7 @@
         Join our growing network of private tutors.
     </p>
     <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <a href="/tutors/apply" class="btn-primary btn-lg">Apply as tutor</a>
+        <a href="/lessons" class="btn-primary btn-lg">Apply as tutor</a>
         <a href="/lessons" class="btn-outline btn-lg">Browse lessons</a>
     </div>
 </section>

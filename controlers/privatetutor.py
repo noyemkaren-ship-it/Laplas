@@ -19,17 +19,19 @@ lookup = TemplateLookup(
     default_filters=["str"],
 )
 
+
 class PrivateTutorController:
     @staticmethod
-    def _get_user(request: Request) -> User:
+    def _get_user(request: Request):
+        """Возвращает пользователя или None, если он не авторизован."""
         user_id = get_id(request)
         if user_id is None:
-            raise HTTPException(status_code=400, detail="User does not exist")
+            return None
         try:
             return UserCrudRepository.get_by_id(user_id)
         except Exception as e:
             print(e)
-            raise HTTPException(status_code=400, detail="User does not exist")
+            return None
 
     @staticmethod
     def _render(template_name: str, context: dict) -> HTMLResponse:
@@ -41,20 +43,38 @@ class PrivateTutorController:
 
     @staticmethod
     def get_all(request: Request) -> HTMLResponse:
+        # 1. Читаем фильтр по предмету из query string
+        subject = request.query_params.get("subject")
+
+        # 2. Получаем всех репетиторов
         all_tutors = PrivateTutorRepository.get_all()
-        subjects = sorted({l.subject for l in all_tutors})
+
+        # 3. Список предметов строим по ПОЛНОМУ списку (до фильтрации),
+        #    иначе после выбора предмета пропадут остальные чипы
+        subjects = sorted({t.subject for t in all_tutors if t.subject})
+
+        # 4. Применяем фильтр
+        tutors = all_tutors
+        if subject:
+            tutors = [t for t in all_tutors if t.subject == subject]
+
+        # 5. Пользователь может быть None (аноним)
         user = PrivateTutorController._get_user(request)
+
         return PrivateTutorController._render("tutors.mako", {
             "request": request,
             "user": user,
-            "tutors": all_tutors,
+            "tutors": tutors,
             "subjects": subjects,
-            "lessons_count": len(all_tutors),
+            "tutors_count": len(all_tutors),
+            "active_subject": subject,
         })
 
     @staticmethod
     def create(request: Request, pt: PrivateTutorSchema):
         user = PrivateTutorController._get_user(request)
-        if user.admin:
-            return PrivateTutorRepository.create(pt)
-        return HTTPException(status_code=400, detail="User already exists")
+        if user is None:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        if not user.admin:
+            raise HTTPException(status_code=403, detail="Admin privileges required")
+        return PrivateTutorRepository.create(pt)
