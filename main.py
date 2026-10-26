@@ -10,4 +10,4 @@ for rout in routers:
     app.include_router(rout)
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=7600)
+    uvicorn.run(app, port=7600, host="0.0.0.0")
